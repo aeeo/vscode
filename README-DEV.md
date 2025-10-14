@@ -152,3 +152,11 @@ open ../VSCode-darwin-arm64
 ```
 
 - 自建 Open VSX 服务器（完全离线）
+
+## 引入扩展
+
+mac软链接
+
+```shell
+ln -s /Users/z/Suunto/suuntoplus-editor /Users/z/z/Git/vscode/extensions/suuntoplus-editor
+```
