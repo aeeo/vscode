@@ -1,4 +1,4 @@
-name: Code OSS
+name: Suunto JS
 
 on:
   pull_request:
