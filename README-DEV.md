@@ -2,7 +2,80 @@
 
 ## 开发环境
 
+### Windows
+
+Visual Studio
+
+安装Desktop development with C++
+
+安装MSVC Spectre缓释库
+
+- 面向 Spectre [(x86 and x64) | (ARM) | (ARM64)] 的 MSVC 版本 version_numbers 库
+- 带有 Spectre 缓解功能的 Visual C++ ATL for [(x86/x64) | ARM | ARM64]
+- 带有 Spectre 缓解功能的 Visual C++ MFC for [x86/x64 | ARM | ARM64]
+
 ```shell
+cd ./extensions/suuntoplus-editor
+npm install
+npm login --registry=https://sally01.jfrog.io/artifactory/api/npm/suunto-npm/ --scope=@suunto-internal --auth-type=legacy
+```
+
+### WLS2
+
+走代理 把下面 4 行追加到 ~/.bashrc 或 ~/.zshrc
+
+``` shell
+cat >> ~/.bashrc << 'EOF'
+# ---------- Clash for Windows ----------
+export hostip=$(cat /etc/resolv.conf | grep -oP '(?<=nameserver\ ).*')
+export http_proxy="http://${hostip}:7890"
+export https_proxy="http://${hostip}:7890"
+export ALL_PROXY="socks5://${hostip}:7890"
+EOF
+
+source ~/.bashrc
+```
+
+验证代理是否生效
+
+``` shell
+# 1. 看 IP
+echo $hostip          # 应输出 192.168.x.x 或 172.x.x.x
+
+# 2. 测试连通
+curl -I https://www.google.com
+# HTTP/2 200 即 OK；timeout 则检查 CFW 是否开启 LAN 允许。
+
+# 3. apt 也走代理（一次性）
+sudo -E apt update
+
+sudo apt-get update && sudo apt-get install curl
+
+```shell
+sudo apt update
+sudo apt install -y pkg-config libx11-dev libxkbfile-dev \
+                    libsecret-1-dev libnss3-dev libasound2-dev \
+                    libgtk-3-dev libxss1 libgbm1
+
+sudo apt install -y libkrb5-dev
+# 保险起见把下面也一起装
+sudo apt install -y build-essential python3 g++ make
+```
+
+```shell
+# 安装 nvm
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+
+# 安装开发环境依赖
+sudo apt update
+sudo apt install -y build-essential python3
+# 可选：把缺少但常用的都补齐
+sudo apt install -y make g++ gcc libc6-dev
+```
+
+```shell
+nvm use 22.15.1
+
 npm cache clean --force
 rm -rf out
 rm -rf node_modules
@@ -14,7 +87,34 @@ yarn watch
 F5 or ./scripts/code.sh
 
 yarn download-builtin-extensions
+```
 
+```shell
+# 临时把签名工具换成空命令
+# macOS/Linux
+brew install --cask wine-stable
+export VSCODE_SKIP_SIGNING=1
+# Windows PowerShell 用
+$env:VSCODE_SKIP_SIGNING="1"
+
+yarn gulp package-win32-x64
+yarn gulp package-win32-ia32
+yarn gulp package-darwin-x64
+yarn gulp package-darwin-arm64
+yarn gulp package-linux-x64
+yarn gulp package-linux-arm64
+
+yarn gulp vscode-win32-x64      # Windows 64-bit
+yarn gulp vscode-win32-ia32     # Windows 32-bit
+yarn gulp vscode-darwin-x64     # macOS Intel
+yarn gulp vscode-darwin-arm64   # macOS Apple Silicon
+yarn gulp vscode-linux-x64      # Linux 64-bit
+yarn gulp vscode-linux-arm64    # Linux ARM64
+```
+
+-min、-user-setup、-system-setup
+
+``` shell
 yarn gulp vscode-darwin-universal
 
 gulp --tasks | grep vscode-darwin
