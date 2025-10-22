@@ -2,6 +2,22 @@
 
 ## 开发环境
 
+通用步骤
+
+```shell
+nvm use 22.15.1
+
+npm cache clean --force
+rm -rf out
+rm -rf node_modules
+
+npm install
+npm run compile
+npm run watch
+
+F5 or ./scripts/code.sh
+```
+
 ### Windows
 
 Visual Studio
@@ -74,18 +90,6 @@ sudo apt install -y make g++ gcc libc6-dev
 ```
 
 ```shell
-nvm use 22.15.1
-
-npm cache clean --force
-rm -rf out
-rm -rf node_modules
-
-yarn
-yarn compile
-yarn watch
-
-F5 or ./scripts/code.sh
-
 yarn download-builtin-extensions
 ```
 
@@ -97,19 +101,19 @@ export VSCODE_SKIP_SIGNING=1
 # Windows PowerShell 用
 $env:VSCODE_SKIP_SIGNING="1"
 
-yarn gulp package-win32-x64
-yarn gulp package-win32-ia32
-yarn gulp package-darwin-x64
-yarn gulp package-darwin-arm64
-yarn gulp package-linux-x64
-yarn gulp package-linux-arm64
+npm run gulp package-win32-x64
+npm run gulp package-win32-ia32
+npm run gulp package-darwin-x64
+npm run gulp package-darwin-arm64
+npm run gulp package-linux-x64
+npm run gulp package-linux-arm64
 
-yarn gulp vscode-win32-x64      # Windows 64-bit
-yarn gulp vscode-win32-ia32     # Windows 32-bit
-yarn gulp vscode-darwin-x64     # macOS Intel
-yarn gulp vscode-darwin-arm64   # macOS Apple Silicon
-yarn gulp vscode-linux-x64      # Linux 64-bit
-yarn gulp vscode-linux-arm64    # Linux ARM64
+npm run gulp vscode-win32-x64      # Windows 64-bit
+npm run gulp vscode-win32-ia32     # Windows 32-bit
+npm run gulp vscode-darwin-x64     # macOS Intel
+npm run gulp vscode-darwin-arm64   # macOS Apple Silicon
+npm run gulp vscode-linux-x64      # Linux 64-bit
+npm run gulp vscode-linux-arm64    # Linux ARM64
 ```
 
 -min、-user-setup、-system-setup
