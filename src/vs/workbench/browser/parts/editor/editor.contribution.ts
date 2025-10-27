@@ -44,7 +44,8 @@ import {
 	NavigateBackwardsInEditsAction, NavigateForwardInNavigationsAction, NavigateBackwardsInNavigationsAction, NavigatePreviousInNavigationsAction, NavigatePreviousInEditsAction, NavigateToLastNavigationLocationAction,
 	MaximizeGroupHideSidebarAction, MoveEditorToNewWindowAction, CopyEditorToNewindowAction, RestoreEditorsToMainWindowAction, ToggleMaximizeEditorGroupAction, MinimizeOtherGroupsHideSidebarAction, CopyEditorGroupToNewWindowAction,
 	MoveEditorGroupToNewWindowAction, NewEmptyEditorWindowAction,
-	ClearEditorHistoryWithoutConfirmAction
+	ClearEditorHistoryWithoutConfirmAction,
+	NavigateSuuntoAction
 } from './editorActions.js';
 import {
 	CLOSE_EDITORS_AND_GROUP_COMMAND_ID, CLOSE_EDITORS_IN_GROUP_COMMAND_ID, CLOSE_EDITORS_TO_THE_RIGHT_COMMAND_ID, CLOSE_EDITOR_COMMAND_ID, CLOSE_EDITOR_GROUP_COMMAND_ID, CLOSE_OTHER_EDITORS_IN_GROUP_COMMAND_ID,
@@ -176,6 +177,7 @@ registerAction2(ChangeEncodingAction);
 
 registerAction2(NavigateForwardAction);
 registerAction2(NavigateBackwardsAction);
+registerAction2(NavigateSuuntoAction);
 
 registerAction2(OpenNextEditor);
 registerAction2(OpenPreviousEditor);
@@ -337,15 +339,21 @@ registerEditorCommands();
 // macOS: Touchbar
 if (isMacintosh) {
 	MenuRegistry.appendMenuItem(MenuId.TouchBarContext, {
-		command: { id: NavigateBackwardsAction.ID, title: NavigateBackwardsAction.LABEL, icon: { dark: FileAccess.asFileUri('vs/workbench/browser/parts/editor/media/back-tb.png') } },
+		command: { id: NavigateSuuntoAction.ID, title: NavigateSuuntoAction.LABEL },
 		group: 'navigation',
 		order: 0
 	});
 
 	MenuRegistry.appendMenuItem(MenuId.TouchBarContext, {
-		command: { id: NavigateForwardAction.ID, title: NavigateForwardAction.LABEL, icon: { dark: FileAccess.asFileUri('vs/workbench/browser/parts/editor/media/forward-tb.png') } },
+		command: { id: NavigateBackwardsAction.ID, title: NavigateBackwardsAction.LABEL, icon: { dark: FileAccess.asFileUri('vs/workbench/browser/parts/editor/media/back-tb.png') } },
 		group: 'navigation',
 		order: 1
+	});
+
+	MenuRegistry.appendMenuItem(MenuId.TouchBarContext, {
+		command: { id: NavigateForwardAction.ID, title: NavigateForwardAction.LABEL, icon: { dark: FileAccess.asFileUri('vs/workbench/browser/parts/editor/media/forward-tb.png') } },
+		group: 'navigation',
+		order: 2
 	});
 }
 

@@ -10,8 +10,10 @@ import { EditorInput } from '../../../common/editor/editorInput.js';
 import { SideBySideEditorInput } from '../../../common/editor/sideBySideEditorInput.js';
 import { IWorkbenchLayoutService, Parts } from '../../../services/layout/browser/layoutService.js';
 import { GoFilter, IHistoryService } from '../../../services/history/common/history.js';
+import { ISuuntoUIService } from '../../../services/suuntoUI/common/suuntoUI.js';
 import { IKeybindingService } from '../../../../platform/keybinding/common/keybinding.js';
 import { ICommandService } from '../../../../platform/commands/common/commands.js';
+import { INotificationService } from '../../../../platform/notification/common/notification.js';
 import { CLOSE_EDITOR_COMMAND_ID, MOVE_ACTIVE_EDITOR_COMMAND_ID, SelectedEditorsMoveCopyArguments, SPLIT_EDITOR_LEFT, SPLIT_EDITOR_RIGHT, SPLIT_EDITOR_UP, SPLIT_EDITOR_DOWN, splitEditor, LAYOUT_EDITOR_GROUPS_COMMAND_ID, UNPIN_EDITOR_COMMAND_ID, COPY_ACTIVE_EDITOR_COMMAND_ID, SPLIT_EDITOR, TOGGLE_MAXIMIZE_EDITOR_GROUP, MOVE_EDITOR_INTO_NEW_WINDOW_COMMAND_ID, COPY_EDITOR_INTO_NEW_WINDOW_COMMAND_ID, MOVE_EDITOR_GROUP_INTO_NEW_WINDOW_COMMAND_ID, COPY_EDITOR_GROUP_INTO_NEW_WINDOW_COMMAND_ID, NEW_EMPTY_EDITOR_WINDOW_COMMAND_ID, MOVE_EDITOR_INTO_RIGHT_GROUP, MOVE_EDITOR_INTO_LEFT_GROUP, MOVE_EDITOR_INTO_ABOVE_GROUP, MOVE_EDITOR_INTO_BELOW_GROUP } from './editorCommands.js';
 import { IEditorGroupsService, IEditorGroup, GroupsArrangement, GroupLocation, GroupDirection, preferredSideBySideGroupDirection, IFindGroupScope, GroupOrientation, EditorGroupLayout, GroupsOrder, MergeGroupMode } from '../../../services/editor/common/editorGroupsService.js';
 import { IEditorService } from '../../../services/editor/common/editorService.js';
@@ -1485,6 +1487,49 @@ export class NavigateBackwardsAction extends Action2 {
 		const historyService = accessor.get(IHistoryService);
 
 		await historyService.goBack(GoFilter.NONE);
+	}
+}
+
+export class NavigateSuuntoAction extends Action2 {
+
+	static readonly ID = 'workbench.action.suuntoJS';
+	static readonly LABEL = localize('suunto', "Suunto JS");
+
+	constructor() {
+		super({
+			id: NavigateSuuntoAction.ID,
+			title: {
+				...localize2('suunto', "Suunto JS"),
+				// mnemonicTitle: localize({ key: 'miBack', comment: ['&& denotes a mnemonic'] }, "&&Back")
+			},
+			f1: true,
+			// precondition: ContextKeyExpr.has('canNavigateBack'),
+			icon: Codicon.menu,
+			// keybinding: {
+			// 	weight: KeybindingWeight.WorkbenchContrib,
+			// 	win: { primary: KeyMod.Alt | KeyCode.LeftArrow, secondary: [KeyCode.BrowserBack] },
+			// 	mac: { primary: KeyMod.WinCtrl | KeyCode.Minus, secondary: [KeyCode.BrowserBack] },
+			// 	linux: { primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.Minus, secondary: [KeyCode.BrowserBack] }
+			// },
+			menu: [
+				// { id: MenuId.MenubarGoMenu, group: '1_history_nav', order: 1 },
+				{ id: MenuId.CommandCenter, order: 0, when: ContextKeyExpr.has('config.workbench.navigationControl.enabled') }
+			]
+		});
+	}
+
+	async run(accessor: ServicesAccessor): Promise<void> {
+		const notificationService = accessor.get(INotificationService);
+		const name = 'Suunto';
+		notificationService.info(`Configuring ${name}`);
+
+		try {
+			const suuntoUIService = accessor.get(ISuuntoUIService);
+			suuntoUIService.showMessage('Suunto action');
+		} catch (error) {
+			console.error('Failed to get SuuntoUIService:', error);
+			notificationService.error(`Failed to get SuuntoUIService: ${error}`);
+		}
 	}
 }
 
