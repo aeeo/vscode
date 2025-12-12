@@ -5,7 +5,7 @@
 
 import { localize } from '../../../nls.js';
 import { ActionBar, ActionsOrientation } from '../../../base/browser/ui/actionbar/actionbar.js';
-import { ACCOUNTS_ACTIVITY_ID, GLOBAL_ACTIVITY_ID } from '../../common/activity.js';
+import { ACCOUNTS_ACTIVITY_ID, GLOBAL_ACTIVITY_ID, SUUNTOJS_ACTIVITY_ID } from '../../common/activity.js';
 import { IActivityService } from '../../services/activity/common/activity.js';
 import { IInstantiationService } from '../../../platform/instantiation/common/instantiation.js';
 import { DisposableStore, Disposable } from '../../../base/common/lifecycle.js';
@@ -47,11 +47,13 @@ import { ICommandService } from '../../../platform/commands/common/commands.js';
 
 export class GlobalCompositeBar extends Disposable {
 
-	private static readonly ACCOUNTS_ACTION_INDEX = 0;
+	private static readonly ACCOUNTS_ACTION_INDEX = 1;
+	private static readonly SUUNTO_JS_ACTION_INDEX = 1;
 	static readonly ACCOUNTS_ICON = registerIcon('accounts-view-bar-icon', Codicon.account, localize('accountsViewBarIcon', "Accounts icon in the view bar."));
-
+	static readonly SUUNTO_JS_ICON = registerIcon('suunto-js-view-bar-icon', Codicon.bug, localize('suuntoJSViewBarIcon', "SuuntoJS icon in the view bar."));
 	readonly element: HTMLElement;
 
+	private readonly suuntoJSAction = this._register(new Action(SUUNTOJS_ACTIVITY_ID));
 	private readonly globalActivityAction = this._register(new Action(GLOBAL_ACTIVITY_ID));
 	private readonly accountAction = this._register(new Action(ACCOUNTS_ACTIVITY_ID));
 	private readonly globalActivityActionBar: ActionBar;
@@ -74,6 +76,10 @@ export class GlobalCompositeBar extends Disposable {
 		});
 		this.globalActivityActionBar = this._register(new ActionBar(this.element, {
 			actionViewItemProvider: (action, options) => {
+				if (action.id === SUUNTOJS_ACTIVITY_ID) {
+					return this.instantiationService.createInstance(SuuntoJSActivityActionViewItem, this.contextMenuActionsProvider, { ...options, colors: this.colors, hoverOptions: this.activityHoverOptions }, contextMenuAlignmentOptions);
+				}
+
 				if (action.id === GLOBAL_ACTIVITY_ID) {
 					return this.instantiationService.createInstance(GlobalActivityActionViewItem, this.contextMenuActionsProvider, { ...options, colors: this.colors, hoverOptions: this.activityHoverOptions }, contextMenuAlignmentOptions);
 				}
@@ -101,6 +107,8 @@ export class GlobalCompositeBar extends Disposable {
 			ariaLabel: localize('manage', "Manage"),
 			preventLoopNavigation: true
 		}));
+
+		this.globalActivityActionBar.push(this.suuntoJSAction, { index: GlobalCompositeBar.SUUNTO_JS_ACTION_INDEX });
 
 		if (this.accountsVisibilityPreference) {
 			this.globalActivityActionBar.push(this.accountAction, { index: GlobalCompositeBar.ACCOUNTS_ACTION_INDEX });
@@ -253,6 +261,61 @@ abstract class AbstractGlobalActivityActionViewItem extends CompositeBarActionVi
 	protected async resolveMainMenuActions(menu: IMenu, _disposable: DisposableStore): Promise<IAction[]> {
 		return getActionBarActions(menu.getActions({ renderShortTitle: true })).secondary;
 	}
+}
+
+export class SuuntoJSActivityActionViewItem extends AbstractGlobalActivityActionViewItem {
+
+	static readonly SUUNTO_JS_VISIBILITY_PREFERENCE_KEY = 'workbench.activity.showSuuntoJS';
+
+	constructor(
+		contextMenuActionsProvider: () => IAction[],
+		options: ICompositeBarActionViewItemOptions,
+		contextMenuAlignmentOptions: () => Readonly<{ anchorAlignment: AnchorAlignment; anchorAxisAlignment: AnchorAxisAlignment }> | undefined,
+		@IThemeService themeService: IThemeService,
+		@ILifecycleService private readonly lifecycleService: ILifecycleService,
+		@IHoverService hoverService: IHoverService,
+		@IContextMenuService contextMenuService: IContextMenuService,
+		@IMenuService menuService: IMenuService,
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@IConfigurationService configurationService: IConfigurationService,
+		@IKeybindingService keybindingService: IKeybindingService,
+		@IActivityService activityService: IActivityService,
+		@IInstantiationService instantiationService: IInstantiationService) {
+		const action = instantiationService.createInstance(CompositeBarAction, {
+			id: SUUNTOJS_ACTIVITY_ID,
+			name: localize('suuntoJS', "SuuntoJS"),
+			classNames: ThemeIcon.asClassNameArray(GlobalCompositeBar.SUUNTO_JS_ICON)
+		});
+		super(MenuId.SuuntoJSContext, action, options, contextMenuActionsProvider, contextMenuAlignmentOptions, themeService, hoverService, menuService, contextMenuService, contextKeyService, configurationService, keybindingService, activityService);
+		this._register(action);
+		this.registerListeners();
+		this.initialize();
+	}
+
+	private registerListeners(): void {
+	}
+
+	// This function exists to ensure that the accounts are added for auth providers that had already been registered
+	// before the menu was created.
+	private async initialize(): Promise<void> {
+		// Resolving the menu doesn't need to happen immediately, so we can wait until after the workbench has been restored
+		// and only run this when the system is idle.
+		await this.lifecycleService.when(LifecyclePhase.Restored);
+		if (this._store.isDisposed) {
+			return;
+		}
+		const disposable = this._register(runWhenWindowIdle(getWindow(this.element), async () => {
+			await this.doInitialize();
+			disposable.dispose();
+		}));
+	}
+
+	private async doInitialize(): Promise<void> {
+
+	}
+
+	//#region overrides
+	//#endregion
 }
 
 export class AccountsActivityActionViewItem extends AbstractGlobalActivityActionViewItem {
@@ -608,7 +671,7 @@ export class GlobalActivityActionViewItem extends AbstractGlobalActivityActionVi
 		});
 		super(MenuId.GlobalActivity, action, options, contextMenuActionsProvider, contextMenuAlignmentOptions, themeService, hoverService, menuService, contextMenuService, contextKeyService, configurationService, keybindingService, activityService);
 		this._register(action);
-		this._register(this.userDataProfileService.onDidChangeCurrentProfile(e => {
+		this._register(this.userDataProfileService.onDidChangeCurrentProfile(() => {
 			action.compositeBarActionItem = {
 				...action.compositeBarActionItem,
 				classNames: ThemeIcon.asClassNameArray(userDataProfileService.currentProfile.icon ? ThemeIcon.fromId(userDataProfileService.currentProfile.icon) : DEFAULT_ICON)
@@ -692,6 +755,37 @@ export class SimpleAccountActivityActionViewItem extends AccountsActivityActionV
 				hoverOptions,
 				compact: true,
 			}, () => undefined, actions => actions, themeService, lifecycleService, hoverService, contextMenuService, menuService, contextKeyService, authenticationService, environmentService, productService, configurationService, keybindingService, secretStorageService, logService, activityService, instantiationService, commandService);
+	}
+}
+
+export class SimpleSuuntoJSActivityActionViewItem extends GlobalActivityActionViewItem {
+
+	constructor(
+		hoverOptions: IActivityHoverOptions,
+		options: IBaseActionViewItemOptions,
+		@IUserDataProfileService userDataProfileService: IUserDataProfileService,
+		@IThemeService themeService: IThemeService,
+		@IHoverService hoverService: IHoverService,
+		@IMenuService menuService: IMenuService,
+		@IContextMenuService contextMenuService: IContextMenuService,
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@IConfigurationService configurationService: IConfigurationService,
+		@IWorkbenchEnvironmentService environmentService: IWorkbenchEnvironmentService,
+		@IKeybindingService keybindingService: IKeybindingService,
+		@IInstantiationService instantiationService: IInstantiationService,
+		@IActivityService activityService: IActivityService,
+		@IStorageService storageService: IStorageService
+	) {
+		super(() => simpleActivityContextMenuActions(storageService, false),
+			{
+				...options,
+				colors: theme => ({
+					badgeBackground: theme.getColor(ACTIVITY_BAR_BADGE_BACKGROUND),
+					badgeForeground: theme.getColor(ACTIVITY_BAR_BADGE_FOREGROUND),
+				}),
+				hoverOptions,
+				compact: true,
+			}, () => undefined, userDataProfileService, themeService, hoverService, menuService, contextMenuService, contextKeyService, configurationService, environmentService, keybindingService, instantiationService, activityService);
 	}
 }
 

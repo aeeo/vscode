@@ -32,8 +32,8 @@ import { WindowTitle } from './windowTitle.js';
 import { CommandCenterControl } from './commandCenterControl.js';
 import { Categories } from '../../../../platform/action/common/actionCommonCategories.js';
 import { WorkbenchToolBar } from '../../../../platform/actions/browser/toolbar.js';
-import { ACCOUNTS_ACTIVITY_ID, GLOBAL_ACTIVITY_ID } from '../../../common/activity.js';
-import { AccountsActivityActionViewItem, isAccountsActionVisible, SimpleAccountActivityActionViewItem, SimpleGlobalActivityActionViewItem } from '../globalCompositeBar.js';
+import { ACCOUNTS_ACTIVITY_ID, GLOBAL_ACTIVITY_ID, SUUNTOJS_ACTIVITY_ID } from '../../../common/activity.js';
+import { AccountsActivityActionViewItem, isAccountsActionVisible, SimpleAccountActivityActionViewItem, SimpleGlobalActivityActionViewItem, SimpleSuuntoJSActivityActionViewItem } from '../globalCompositeBar.js';
 import { HoverPosition } from '../../../../base/browser/ui/hover/hoverWidget.js';
 import { IEditorGroupsContainer, IEditorGroupsService } from '../../../services/editor/common/editorGroupsService.js';
 import { ActionRunner, IAction } from '../../../../base/common/actions.js';
@@ -586,6 +586,9 @@ export class BrowserTitlebarPart extends Part implements ITitlebarPart {
 
 		// --- Activity Actions
 		if (!this.isAuxiliary) {
+			if (action.id === SUUNTOJS_ACTIVITY_ID) {
+				return this.instantiationService.createInstance(SimpleSuuntoJSActivityActionViewItem, { position: () => HoverPosition.BELOW }, options);
+			}
 			if (action.id === GLOBAL_ACTIVITY_ID) {
 				return this.instantiationService.createInstance(SimpleGlobalActivityActionViewItem, { position: () => HoverPosition.BELOW }, options);
 			}
