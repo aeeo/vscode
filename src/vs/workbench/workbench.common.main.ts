@@ -295,6 +295,9 @@ import './contrib/customEditor/browser/customEditor.contribution.js';
 // External Uri Opener
 import './contrib/externalUriOpener/common/externalUriOpener.contribution.js';
 
+// Suunto JS
+import './contrib/suuntoJS/browser/suuntoJS.contribution.js';
+
 // Extensions Management
 import './contrib/extensions/browser/extensions.contribution.js';
 import './contrib/extensions/browser/extensionsViewlet.js';
