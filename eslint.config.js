@@ -131,6 +131,109 @@ export default tseslint.config(
 			]
 		},
 	},
+	{
+		files: [
+			'src/**/suunto*/**/*.ts',
+			'src/**/suunto*.js'
+		],
+		plugins: {
+			'local': pluginLocal,
+			'header': pluginHeader,
+		},
+		rules: {
+			'constructor-super': 'warn',
+			'curly': 'warn',
+			'eqeqeq': 'warn',
+			'prefer-const': [
+				'warn',
+				{
+					'destructuring': 'all'
+				}
+			],
+			'no-buffer-constructor': 'warn',
+			'no-caller': 'warn',
+			'no-case-declarations': 'warn',
+			'no-debugger': 'warn',
+			'no-duplicate-case': 'warn',
+			'no-duplicate-imports': 'warn',
+			'no-eval': 'warn',
+			'no-async-promise-executor': 'warn',
+			'no-extra-semi': 'warn',
+			'no-new-wrappers': 'warn',
+			'no-redeclare': 'off',
+			'no-sparse-arrays': 'warn',
+			'no-throw-literal': 'warn',
+			'no-unsafe-finally': 'warn',
+			'no-unused-labels': 'warn',
+			'no-misleading-character-class': 'warn',
+			'no-restricted-globals': [
+				'warn',
+				'name',
+				'length',
+				'event',
+				'closed',
+				'external',
+				'status',
+				'origin',
+				'orientation',
+				'context'
+			], // non-complete list of globals that are easy to access unintentionally
+			'no-var': 'warn',
+			'semi': 'off',
+			'local/code-translation-remind': 'warn',
+			'local/code-no-native-private': 'warn',
+			'local/code-parameter-properties-must-have-explicit-accessibility': 'warn',
+			'local/code-no-nls-in-standalone-editor': 'warn',
+			'local/code-no-potentially-unsafe-disposables': 'warn',
+			'local/code-no-dangerous-type-assertions': 'warn',
+			'local/code-no-any-casts': 'warn',
+			'local/code-no-standalone-editor': 'warn',
+			'local/code-no-unexternalized-strings': 'warn',
+			'local/code-must-use-super-dispose': 'warn',
+			'local/code-declare-service-brand': 'warn',
+			'local/code-no-reader-after-await': 'warn',
+			'local/code-no-observable-get-in-reactive-context': 'warn',
+			'local/code-no-deep-import-of-internal': ['error', { '.*Internal': true, 'searchExtTypesInternal': false }],
+			'local/code-layering': [
+				'warn',
+				{
+					'common': [],
+					'node': [
+						'common'
+					],
+					'browser': [
+						'common'
+					],
+					'electron-browser': [
+						'common',
+						'browser'
+					],
+					'electron-utility': [
+						'common',
+						'node'
+					],
+					'electron-main': [
+						'common',
+						'node',
+						'electron-utility'
+					]
+				}
+			],
+			'header/header': [
+				2,
+				'block',
+				[
+					'---------------------------------------------------------------------------------------------',
+					' *  Based on Visual Studio Code source code.',
+					' *  Original Copyright (c) Microsoft Corporation.',
+					' *  Licensed under the MIT License.',
+					' *  Copyright (c) Suunto Corporation. All rights reserved.',
+					' *  This software is proprietary and confidential. See LICENSE-SUUNTO.txt in the project root for license information.',
+					' *--------------------------------------------------------------------------------------------'
+				]
+			]
+		}
+	},
 	// TS
 	{
 		files: [

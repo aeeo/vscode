@@ -23,6 +23,16 @@ const copyrightHeaderLines = [
 	' *--------------------------------------------------------------------------------------------*/',
 ];
 
+const copyrightHeaderLinesSuunto = [
+	'/*---------------------------------------------------------------------------------------------',
+	' *  Based on Visual Studio Code source code.',
+	' *  Original Copyright (c) Microsoft Corporation.',
+	' *  Licensed under the MIT License.',
+	' *  Copyright (c) Suunto Corporation. All rights reserved.',
+	' *  This software is proprietary and confidential. See LICENSE-SUUNTO.txt in the project root for license information.',
+	' *--------------------------------------------------------------------------------------------*/',
+];
+
 interface VinylFileWithLines extends VinylFile {
 	__lines: string[];
 }
@@ -107,11 +117,22 @@ export function hygiene(some: NodeJS.ReadWriteStream | string[] | undefined, run
 	const copyrights = es.through(function (file: VinylFileWithLines) {
 		const lines = file.__lines;
 
-		for (let i = 0; i < copyrightHeaderLines.length; i++) {
-			if (lines[i] !== copyrightHeaderLines[i]) {
-				console.error(file.relative + ': Missing or bad copyright statement');
-				errorCount++;
-				break;
+		if (path.basename(file.path).startsWith('suunto') || path.dirname(file.path).includes('/suuntoJS')) {
+			for (let i = 0; i < copyrightHeaderLinesSuunto.length; i++) {
+				if (lines[i] !== copyrightHeaderLinesSuunto[i]) {
+					console.error(file.relative + ': Missing or bad Suunto copyright statement');
+					errorCount++;
+					break;
+				}
+			}
+		}
+		else {
+			for (let i = 0; i < copyrightHeaderLines.length; i++) {
+				if (lines[i] !== copyrightHeaderLines[i]) {
+					console.error(file.relative + ': Missing or bad copyright statement');
+					errorCount++;
+					break;
+				}
 			}
 		}
 

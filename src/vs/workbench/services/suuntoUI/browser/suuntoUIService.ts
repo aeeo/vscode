@@ -1,7 +1,11 @@
 /*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Based on Visual Studio Code source code.
+ *  Original Copyright (c) Microsoft Corporation.
+ *  Licensed under the MIT License.
+ *  Copyright (c) Suunto Corporation. All rights reserved.
+ *  This software is proprietary and confidential. See LICENSE-SUUNTO.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 import { Disposable } from '../../../../base/common/lifecycle.js';
 import { ISuuntoUIService } from '../common/suuntoUI.js';
 import { INotificationService } from '../../../../platform/notification/common/notification.js';
