@@ -7,11 +7,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Disposable } from '../../../../base/common/lifecycle.js';
-import { ISuuntoUIService } from '../common/suuntoUI.js';
+import { ISuuntoJSWebviewService } from '../common/suuntoJSWebview.js';
 import { INotificationService } from '../../../../platform/notification/common/notification.js';
 import { InstantiationType, registerSingleton } from '../../../../platform/instantiation/common/extensions.js';
 
-export class SuuntoUIService extends Disposable implements ISuuntoUIService {
+export class SuuntoJSWebviewService extends Disposable implements ISuuntoJSWebviewService {
 	constructor(
 		@INotificationService private readonly notificationService: INotificationService
 	) {
@@ -27,4 +27,4 @@ export class SuuntoUIService extends Disposable implements ISuuntoUIService {
 	}
 }
 
-registerSingleton(ISuuntoUIService, SuuntoUIService, InstantiationType.Eager);
+registerSingleton(ISuuntoJSWebviewService, SuuntoJSWebviewService, InstantiationType.Eager);

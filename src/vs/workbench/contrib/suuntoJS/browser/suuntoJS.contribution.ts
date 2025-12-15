@@ -9,18 +9,24 @@
 import { Codicon } from '../../../../base/common/codicons.js';
 import { localize, localize2 } from '../../../../nls.js';
 import { Action2, MenuId, MenuRegistry, registerAction2 } from '../../../../platform/actions/common/actions.js';
+import { ServicesAccessor } from '../../../../platform/instantiation/common/instantiation.js';
+import { ISuuntoJSService } from '../../../services/suuntoJS/common/suuntoJS.js';
 
 class SuuntoJSAction extends Action2 {
 	constructor() {
 		super({
-			id: 'suuntojs.action1',
-			title: localize2('suuntojs.action1', "SuuntoJS Action 1"),
+			id: 'suuntoJS.action1',
+			title: localize2('suuntoJS.action1', "SuuntoJS Action 1"),
 			icon: Codicon.settings,
 			f1: false
 		});
 	}
 
-	run(accessor: any) {
+	run(accessor: ServicesAccessor) {
+		const suuntoJSService = accessor.get(ISuuntoJSService);
+
+		suuntoJSService.showMessage('SuuntoJS Action 1 executed');
+
 		console.log('SuuntoJS Action 1 executed');
 	}
 }
@@ -31,8 +37,8 @@ MenuRegistry.appendMenuItem(MenuId.SuuntoJSContext, {
 	group: '2_configuration',
 	order: 1,
 	command: {
-		id: 'suuntojs.action1',
-		title: localize('suuntojs.action1', "SuuntoJS Action 1"),
+		id: 'suuntoJS.action1',
+		title: localize('suuntoJS.action1', "SuuntoJS Action 1"),
 		icon: Codicon.settings
 	},
 	when: undefined
