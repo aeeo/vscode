@@ -10,7 +10,7 @@ import { EditorInput } from '../../../common/editor/editorInput.js';
 import { SideBySideEditorInput } from '../../../common/editor/sideBySideEditorInput.js';
 import { IWorkbenchLayoutService, Parts } from '../../../services/layout/browser/layoutService.js';
 import { GoFilter, IHistoryService } from '../../../services/history/common/history.js';
-import { ISuuntoUIService } from '../../../services/suuntoUI/common/suuntoUI.js';
+import { ISuuntoJSService } from '../../../services/suuntoJS/common/suuntoJS.js';
 import { IKeybindingService } from '../../../../platform/keybinding/common/keybinding.js';
 import { ICommandService } from '../../../../platform/commands/common/commands.js';
 import { INotificationService } from '../../../../platform/notification/common/notification.js';
@@ -1524,11 +1524,11 @@ export class NavigateSuuntoAction extends Action2 {
 		notificationService.info(`Configuring ${name}`);
 
 		try {
-			const suuntoUIService = accessor.get(ISuuntoUIService);
+			const suuntoUIService = accessor.get(ISuuntoJSService);
 			suuntoUIService.showMessage('Suunto action');
 		} catch (error) {
-			console.error('Failed to get SuuntoUIService:', error);
-			notificationService.error(`Failed to get SuuntoUIService: ${error}`);
+			console.error('Failed to get SuuntoJSService:', error);
+			notificationService.error(`Failed to get SuuntoJSService: ${error}`);
 		}
 	}
 }
