@@ -1,0 +1,14 @@
+SUUNTO 专有软件许可证 // allow-any-unicode-next-line
+
+版权所有 (c) 2024 SUUNTO  // allow-any-unicode-next-line
+
+本软件及其所有内容均为 SUUNTO 的机密和专有信息。未经 SUUNTO 事先书面许可，任何人不得：  // allow-any-unicode-next-line
+
+1. 复制、修改、分发、出售、租赁、转让本软件  // allow-any-unicode-next-line
+2. 对本软件进行反向工程、反编译或反汇编  // allow-any-unicode-next-line
+3. 创建基于本软件的衍生作品  // allow-any-unicode-next-line
+4. 将本软件用于商业目的（除非获得明确授权）  // allow-any-unicode-next-line
+
+违反本协议将导致法律诉讼，并可能面临民事和刑事处罚。  // allow-any-unicode-next-line
+
+SUUNTO 保留本协议未明确授予的所有权利。  // allow-any-unicode-next-line
