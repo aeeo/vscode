@@ -14,15 +14,12 @@ import { ISuuntoJSService } from '../../../../services/suuntoJS/common/suuntoJS.
 export abstract class SuuntoJSBaseAction extends Action2 {
 	protected async runAction(accessor: ServicesAccessor, actionType: string) {
 		const suuntoJSService = accessor.get(ISuuntoJSService);
-
 		const commandService: ICommandService = accessor.get(ICommandService);
-
 
 		switch (actionType) {
 			case 'openSimulator':
 				// suuntoJSService.openSimulator();
 				commandService.executeCommand('suuntoplus.simulatorDefault');
-
 				suuntoJSService.showMessage('Opening SuuntoJS Simulator');
 				break;
 			case 'action2':
