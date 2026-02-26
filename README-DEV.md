@@ -5,8 +5,9 @@
 通用步骤
 
 ```shell
-nvm use 22.15.1
+nvm use 22.22.0
 
+rm -rf node_modules extensions/node_modules
 npm cache clean --force
 rm -rf out
 rm -rf node_modules
