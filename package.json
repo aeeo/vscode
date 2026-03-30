@@ -108,6 +108,7 @@
     "@xterm/addon-webgl": "^0.20.0-beta.166",
     "@xterm/headless": "^6.1.0-beta.167",
     "@xterm/xterm": "^6.1.0-beta.167",
+    "ace-loader": "file:../../openharmony/developtools/developtools_ace_js2bundle/ace-loader/ace-loader-1.0.11.tgz",
     "http-proxy-agent": "^7.0.0",
     "https-proxy-agent": "^7.0.2",
     "jschardet": "3.1.4",
