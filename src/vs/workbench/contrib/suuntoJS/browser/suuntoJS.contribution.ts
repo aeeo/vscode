@@ -8,6 +8,8 @@
 
 import { registerSuuntoJSAction2Action } from './actions/suuntoJSAction2.contribution.js';
 import { registerSuuntoJSSimulatorAction } from './actions/suuntoJSSimulator.contribution.js';
+import { registerSuuntoJSBuildAction } from './actions/suuntoJSBuild.contribution.js';
 
 registerSuuntoJSSimulatorAction();
+registerSuuntoJSBuildAction();
 registerSuuntoJSAction2Action();

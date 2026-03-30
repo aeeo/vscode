@@ -52,7 +52,7 @@ import { IView } from '../../../../base/browser/ui/grid/grid.js';
 import { createInstantHoverDelegate } from '../../../../base/browser/ui/hover/hoverDelegateFactory.js';
 import { IBaseActionViewItemOptions } from '../../../../base/browser/ui/actionbar/actionViewItems.js';
 import { IHoverDelegate } from '../../../../base/browser/ui/hover/hoverDelegate.js';
-import { CommandsRegistry } from '../../../../platform/commands/common/commands.js';
+import { CommandsRegistry, ICommandService } from '../../../../platform/commands/common/commands.js';
 import { safeIntl } from '../../../../base/common/date.js';
 import { IsCompactTitleBarContext, TitleBarVisibleContext } from '../../../common/contextkeys.js';
 
@@ -268,6 +268,7 @@ export class BrowserTitlebarPart extends Part implements ITitlebarPart {
 	private readonly actionToolBarDisposable = this._register(new DisposableStore());
 	private readonly editorActionsChangeDisposable = this._register(new DisposableStore());
 	private actionToolBarElement!: HTMLElement;
+	private customButtons: HTMLElement[] = [];
 
 	private globalToolbarMenu: IMenu | undefined;
 	private layoutToolbarMenu: IMenu | undefined;
@@ -479,6 +480,7 @@ export class BrowserTitlebarPart extends Part implements ITitlebarPart {
 		// Create Toolbar Actions
 		if (hasCustomTitlebar(this.configurationService, this.titleBarStyle)) {
 			this.actionToolBarElement = append(this.rightContent, $('div.action-toolbar-container'));
+			this.createCustomButtons();
 			this.createActionToolBar();
 			this.createActionToolBarMenus();
 		}
@@ -746,6 +748,43 @@ export class BrowserTitlebarPart extends Part implements ITitlebarPart {
 		}
 
 		updateToolBarActions();
+	}
+
+	private createCustomButtons(): void {
+		const buttonIcons = ['callstack-view-icon'];
+		const buttonTitles = ['Build App'];
+		const buttonCommands = ['suunto-js-tools.buildLite', '', ''];
+
+		const commandService = this.instantiationService.invokeFunction(accessor => accessor.get(ICommandService));
+
+		const toolbar = append(this.actionToolBarElement, $('div.monaco-toolbar'));
+		const actionBar = append(toolbar, $('div.monaco-action-bar'));
+		const actionsContainer = append(actionBar, $('ul.actions-container'));
+		actionsContainer.setAttribute('role', 'toolbar');
+
+		for (let i = 0; i < buttonIcons.length; i++) {
+			const actionItem = append(actionsContainer, $('li.action-item'));
+			actionItem.setAttribute('role', 'presentation');
+
+			const actionLabel = append(actionItem, $('a.action-label'));
+			actionLabel.classList.add('codicon', `codicon-${buttonIcons[i]}`);
+			actionLabel.setAttribute('role', 'button');
+			actionLabel.setAttribute('aria-label', buttonTitles[i]);
+			actionLabel.title = buttonTitles[i];
+			actionLabel.tabIndex = i === 0 ? 0 : -1;
+
+			const commandId = buttonCommands[i];
+			this._register(addDisposableListener(actionLabel, EventType.CLICK, (e) => {
+				EventHelper.stop(e);
+				if (commandId) {
+					commandService.executeCommand(commandId);
+				} else {
+					console.log(`Custom button ${i + 1} clicked`);
+				}
+			}));
+
+			this.customButtons.push(actionLabel);
+		}
 	}
 
 	override updateStyles(): void {

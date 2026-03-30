@@ -1,5 +1,118 @@
 # Developer Guide
 
+## 架构
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        VS Code 架构分层                                  │
+├─────────────────────────────────────────────────────────────────────────┤
+│  第6层 │  code/                        ← Electron 主进程实现            │
+│        │  - electron-main/                 (桌面应用入口)               │
+│        │  - node/                                                       │
+├────────┼───────────────────────────────────────────────────────────────┤
+│  第5层 │  workbench/                   ← 工作台 / 应用层               │
+│        │  - browser/ (UI组件)                                          │
+│        │  - services/ (服务实现)                                        │
+│        │  - contrib/ (功能贡献点)                                       │
+│        │  - api/ (扩展API)                                              │
+├────────┼───────────────────────────────────────────────────────────────┤
+│  第4层 │  editor/                      ← 编辑器核心 (Monaco Editor)    │
+│        │  - browser/ (视图渲染)                                        │
+│        │  - common/ (核心模型)                                         │
+├────────┼───────────────────────────────────────────────────────────────┤
+│  第3层 │  platform/                    ← 平台抽象层 / 服务接口层        │
+│        │  - files/, - log/, - theme/       (依赖注入基础设施)          │
+│        │  - backup/, - dnd/, - url/                                     │
+├────────┼───────────────────────────────────────────────────────────────┤
+│  第2层 │  base/                        ← 基础工具库                     │
+│        │  - common/ (平台无关工具)                                      │
+│        │  - browser/ (浏览器UI组件)                                     │
+│        │  - node/ (Node.js工具)                                         │
+│        │  - parts/ (IPC等基础组件)                                      │
+├────────┼───────────────────────────────────────────────────────────────┤
+│  第1层 │  node_modules / 外部依赖       ← 第三方库                      │
+└────────┴───────────────────────────────────────────────────────────────┘
+
+### src/vs/base/
+
+├── common/          ← 平台无关的核心工具
+│   ├── arrays.ts, objects.ts, types.ts    (数据结构)
+│   ├── event.ts, cancellation.ts          (异步/事件)
+│   ├── uri.ts, path.ts, glob.ts           (路径/资源)
+│   └── json.ts, buffer.ts, stream.ts      (数据处理)
+│
+├── browser/         ← 浏览器相关的UI组件
+│   ├── ui/           (可复用UI组件)
+│   │   ├── list/, tree/, table/           (列表/树/表格)
+│   │   ├── menu/, sash/, hover/           (菜单/分割条/悬停)
+│   │   └── dnd/, aria/                    (拖放/无障碍)
+│   └── dom.ts, keyboardEvent.ts           (DOM工具)
+│
+├── node/            ← Node.js 特有功能
+│   ├── pfs.ts, crypto.ts                  (文件系统/加密)
+│   └── processes.ts, shell.ts             (进程/Shell)
+│
+└── parts/           ← 基础组件
+    └── ipc/         (进程间通信)
+
+### platform/
+
+src/vs/platform/
+├── files/           ← 文件系统服务
+├── log/             ← 日志服务
+├── theme/           ← 主题服务
+├── backup/          ← 备份服务
+├── dnd/             ← 拖放服务
+├── label/           ← 标签服务
+├── request/         ← 网络请求服务
+├── state/           ← 状态持久化
+├── url/             ← URL处理
+└── sign/            ← 签名服务
+
+### editor/
+
+src/vs/editor/
+├── browser/         ← 编辑器视图渲染
+│   ├── view.ts               (视图控制)
+│   ├── editorDom.ts          (DOM操作)
+│   └── gpu/                  (GPU渲染)
+├── common/          ← 编辑器核心模型
+│   ├── core/                 (核心数据结构)
+│   │   ├── position.ts, range.ts
+│   │   └── 2d/               (2D几何)
+│   ├── model/                (文档模型)
+│   ├── cursor/               (光标控制)
+│   └── tokens/               (语法高亮)
+└── editor.api.ts    ← Monaco Editor 公开API
+
+### workbench/
+
+src/vs/workbench/
+├── browser/         ← 核心UI组件
+│   ├── layout.ts              (布局管理)
+│   ├── part.ts                (界面部件基类)
+│   ├── workbench.ts           (工作台入口)
+│   └── window.ts              (窗口管理)
+├── services/        ← 服务实现
+├── contrib/         ← 功能贡献点
+├── api/             ← 扩展API
+│   └── common/
+└── common/          ← 工作台通用代码
+    ├── editor.ts, views.ts
+    └── theme.ts, dialogs.ts
+
+### code/ 和 server/
+
+src/vs/
+├── code/                    ← Electron 桌面应用
+│   ├── electron-main/       (主进程入口)
+│   │   ├── main.ts          (启动入口)
+│   │   └── app.ts           (应用生命周期)
+│   └── node/                (CLI工具)
+└── server/                  ← Web/远程服务器
+    └── node/
+        ├── server.main.ts   (服务器入口)
+        └── webClientServer.ts
+
 ## 开发环境
 
 通用步骤
@@ -19,13 +132,22 @@ npm run watch
 F5 or ./scripts/code.sh
 ```
 
+如果`npm install`超时，需要挂VPN，在Guthub申请Token并设置环境变量
+
+获取 Token：GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token
+
+```shell
+$env:GITHUB_TOKEN="github_personal_access_token"
+npm install
+```
+
 ### Windows
 
 Visual Studio
 
 安装Desktop development with C++
 
-安装MSVC Spectre缓释库
+安装MSVC Spectre缓释库 (必须！)
 
 - 面向 Spectre [(x86 and x64) | (ARM) | (ARM64)] 的 MSVC 版本 version_numbers 库
 - 带有 Spectre 缓解功能的 Visual C++ ATL for [(x86/x64) | ARM | ARM64]
@@ -160,6 +282,14 @@ mac软链接
 
 ```shell
 ln -s /Users/z/Suunto/suuntoplus-editor /Users/z/z/Git/vscode/extensions/suuntoplus-editor
+```
+
+windows软连接
+
+```powershell
+New-Item -ItemType SymbolicLink -Path "extensions\suunto-js-tools" -Target "..\..\silta_extensions\suunto-js-tools"
+
+New-Item -ItemType SymbolicLink -Path "extensions\suuntoplus-editor" -Target "..\..\suuntoplus-editor"
 ```
 
 ## 打包

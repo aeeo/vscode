@@ -25,6 +25,9 @@ export abstract class SuuntoJSBaseAction extends Action2 {
 			case 'action2':
 				suuntoJSService.showMessage('Executing Action 2');
 				break;
+			case 'build':
+				await commandService.executeCommand('suunto-js-tools.buildLite');
+				break;
 			default:
 				suuntoJSService.showMessage('Unknown action type');
 				break;
