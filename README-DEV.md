@@ -278,17 +278,19 @@ open ../VSCode-darwin-arm64
 
 ## 开发环境引入扩展
 
-mac软链接
+### 软链接
+
+Mac
 
 ```shell
 ln -s /Users/z/Suunto/suuntoplus-editor /Users/z/z/Git/vscode/extensions/suuntoplus-editor
 ```
 
-windows软连接
+Windows 管理员权限运行
 
 ```powershell
+New-Item -ItemType SymbolicLink -Path "extensions\suunto-js-language" -Target "..\..\silta_extensions\suunto-js-language"
 New-Item -ItemType SymbolicLink -Path "extensions\suunto-js-tools" -Target "..\..\silta_extensions\suunto-js-tools"
-
 New-Item -ItemType SymbolicLink -Path "extensions\suuntoplus-editor" -Target "..\..\suuntoplus-editor"
 ```
 
