@@ -113,7 +113,7 @@ src/vs/
         ├── server.main.ts   (服务器入口)
         └── webClientServer.ts
 
-## 开发环境
+## 开发环境搭建
 
 通用步骤
 
@@ -159,7 +159,7 @@ npm install
 npm login --registry=https://sally01.jfrog.io/artifactory/api/npm/suunto-npm/ --scope=@suunto-internal --auth-type=legacy
 ```
 
-### WLS2
+### WLS2 (还没跑通)
 
 走代理 把下面 4 行追加到 ~/.bashrc 或 ~/.zshrc
 
@@ -257,7 +257,7 @@ open ../VSCode-darwin-arm64
 | ------------ | ----------------------------------------------------------------------- |
 | **Open VSX** | 由 **Eclipse 基金会**运营的开源扩展市场[](https://open-vsx.org/)        |
 | **用途**     | 为非微软发行的 VS Code 兼容编辑器（如 VSCodium、Gitpod、Theia）提供扩展 |
-| **合法性**   | ✅ 完全开源、可自建、可商用                                              |
+| **合法性**   | 完全开源、可自建、可商用                                                |
 | **扩展数量** | 比官方市场少，但主流扩展基本都有（如 Prettier、Python、ESLint）         |
 
 ```json
@@ -276,7 +276,7 @@ open ../VSCode-darwin-arm64
 
 - 自建 Open VSX 服务器（完全离线）
 
-## 开发环境引入扩展
+## 引入扩展
 
 ### 软链接
 
@@ -294,8 +294,16 @@ New-Item -ItemType SymbolicLink -Path "extensions\suunto-js-tools" -Target "..\.
 New-Item -ItemType SymbolicLink -Path "extensions\suuntoplus-editor" -Target "..\..\suuntoplus-editor"
 ```
 
-## 打包
+## 打包构建
+
+Mac
 
 ``` shell
 ./scripts/build-suunto-vscode.sh
+```
+
+Windows
+
+``` powershell
+./scripts/build-suunto-vscode-windows.bat
 ```
