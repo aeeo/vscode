@@ -113,7 +113,7 @@ src/vs/
         ├── server.main.ts   (服务器入口)
         └── webClientServer.ts
 
-## 开发环境
+## 开发环境搭建
 
 通用步骤
 
@@ -159,7 +159,7 @@ npm install
 npm login --registry=https://sally01.jfrog.io/artifactory/api/npm/suunto-npm/ --scope=@suunto-internal --auth-type=legacy
 ```
 
-### WLS2
+### WLS2 (还没跑通)
 
 走代理 把下面 4 行追加到 ~/.bashrc 或 ~/.zshrc
 
@@ -251,13 +251,41 @@ yarn gulp vscode-darwin-arm64-min
 open ../VSCode-darwin-arm64
 ```
 
+## 代码提交
+
+### 配置钩子
+
+`npm install`的时候，会生成`.git\hooks\commit-msg`文件，需要手动把gerrit的hooks文件集成进来，注意每次`npm install`都需要这样操作
+
+先下载：`scp -p -P 29418 zhaotong@172.16.5.16:hooks/commit-msg .git/hooks/commit-msg-gerrit`
+
+然后编辑`.git\hooks\commit-msg`，如下位置参考
+
+``` shell
+cd .
+
+# ==============================================
+# 调用 Gerrit Change-Id 生成脚本
+# ==============================================
+echo "> Running Gerrit commit-msg hook..."
+"$(dirname "$0")/commit-msg-gerrit" "$@"
+GERRIT_EXIT_CODE=$?
+
+if [ $GERRIT_EXIT_CODE -ne 0 ]; then
+  echo "> Gerrit commit-msg hook failed!"
+  exit $GERRIT_EXIT_CODE
+fi
+
+has_hook_script commitmsg || exit 0
+```
+
 ## 插件市场
 
 | 项目         | 说明                                                                    |
 | ------------ | ----------------------------------------------------------------------- |
 | **Open VSX** | 由 **Eclipse 基金会**运营的开源扩展市场[](https://open-vsx.org/)        |
 | **用途**     | 为非微软发行的 VS Code 兼容编辑器（如 VSCodium、Gitpod、Theia）提供扩展 |
-| **合法性**   | ✅ 完全开源、可自建、可商用                                              |
+| **合法性**   | 完全开源、可自建、可商用                                                |
 | **扩展数量** | 比官方市场少，但主流扩展基本都有（如 Prettier、Python、ESLint）         |
 
 ```json
@@ -276,24 +304,34 @@ open ../VSCode-darwin-arm64
 
 - 自建 Open VSX 服务器（完全离线）
 
-## 开发环境引入扩展
+## 引入扩展
 
-mac软链接
+### 软链接
+
+Mac
 
 ```shell
 ln -s /Users/z/Suunto/suuntoplus-editor /Users/z/z/Git/vscode/extensions/suuntoplus-editor
 ```
 
-windows软连接
+Windows 管理员权限运行
 
 ```powershell
+New-Item -ItemType SymbolicLink -Path "extensions\suunto-js-language" -Target "..\..\silta_extensions\suunto-js-language"
 New-Item -ItemType SymbolicLink -Path "extensions\suunto-js-tools" -Target "..\..\silta_extensions\suunto-js-tools"
-
 New-Item -ItemType SymbolicLink -Path "extensions\suuntoplus-editor" -Target "..\..\suuntoplus-editor"
 ```
 
-## 打包
+## 打包构建
+
+Mac
 
 ``` shell
 ./scripts/build-suunto-vscode.sh
+```
+
+Windows
+
+``` powershell
+./scripts/build-suunto-vscode-windows.bat
 ```
